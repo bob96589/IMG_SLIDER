@@ -15,6 +15,7 @@ public class Imageslider extends XulElement {
 
 	static {
 		addClientEvent(Imageslider.class, "onFoo", 0);
+		addClientEvent(Imageslider.class, Events.ON_SELECT, 0);
 	}
 
 	/* Here's a simple example for how to implements a member field */
@@ -38,9 +39,7 @@ public class Imageslider extends XulElement {
 
 		render(renderer, "selectedItem", _selectedItem);
 		render(renderer, "selectedIndex", _selectedIndex);
-		if(_viewportSize != 3) 
 			render(renderer, "viewportSize", _viewportSize);
-		if(_imageWidth != 200) 
 			render(renderer, "imageWidth", _imageWidth);
 	}
 
@@ -52,6 +51,9 @@ public class Imageslider extends XulElement {
 			final String foo = (String) data.get("foo");
 			System.out.println("do onFoo, data:" + foo);
 			Events.postEvent(Event.getEvent(request));
+		}else if (cmd.equals(Events.ON_SELECT)) {
+			
+			
 		} else
 			super.service(request, everError);
 	}

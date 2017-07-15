@@ -57,19 +57,28 @@ bob.Imageslider = zk.$extends(zul.Widget, {
 		},
 		selectedIndex: function(index) { 
 			console.log("selectedIndex: " + index);
-			console.log("this: " + JSON.stringify(this));
-			console.log("this.$n(): " + this.$n());
 			if(this.desktop) {
 			}
 		},
-		viewportSize: function(size) { 
+		viewportSize: function(size) { 			
+			
 			console.log("viewportSize: " + size);
 			if(this.desktop) {
+				//console.log(this.getImageWidth());
+				//console.log(getImageWidth());
+				//console.log(this.imageWidth);
+				//console.log(this.imageWidth());
+				console.log(this._imageWidth);
+				this.$n('wrapper').style.width = this._imageWidth * size + 'px';
 			}
 		},
 		imageWidth: function (width) {
 			console.log("imageWidth: " + width);
 			if(this.desktop) {
+				for (var w = this.firstChild; w; w = w.nextSibling) {
+					var child = w.$n();
+					child.style.width = width + 'px';
+				}
 			}
 		}
 	},
@@ -123,6 +132,7 @@ bob.Imageslider = zk.$extends(zul.Widget, {
 		please refer to http://books.zkoss.org/wiki/ZK%20Client-side%20Reference/Notifications
 	 */
 	doClick_: function (evt) {
+		console.log('click');
 		this.$super('doClick_', evt, true);//the super doClick_ should be called
 		this.fire('onFoo', {foo: 'myData'});
 	}

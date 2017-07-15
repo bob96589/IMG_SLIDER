@@ -14,12 +14,13 @@ function (out) {
 	/*
 	 * class="${zcls} ${this.getSclass()}" id="${uuid}"
 	 */
-	console.log(this.getViewportSize());
-	console.log(this.getImageWidth());
+	console.log('mold.this.getViewportSize(): ' + this.getViewportSize());
+	console.log('mold.this.getImageWidth(): ' + this.getImageWidth());
+	console.log('mold.this.domAttrs_(): ' + this.domAttrs_());
 	
 	out.push('<div ', this.domAttrs_(), '>');
 	
-	out.push('<div class="', this.$s('imgListWrapper'), '"><div class="', this.$s('imgList'), '">');
+	out.push('<div id="', uuid, '-wrapper" class="', this.$s('imgListWrapper'), '"><div class="', this.$s('imgList'), '">');
 	for (var w = this.firstChild; w; w = w.nextSibling) {
 		out.push('<div class="', this.$s('img'), '">');
 		w.redraw(out);

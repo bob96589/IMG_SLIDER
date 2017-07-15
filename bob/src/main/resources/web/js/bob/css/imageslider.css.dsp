@@ -9,8 +9,7 @@
 
 
 .z-imageslider-imgListWrapper{
-            width: 600px;
-            overflow: hidden;
+    overflow: hidden;
 }
 
 
@@ -23,6 +22,4 @@
 
 .z-imageslider-img{
 	float: left;
-	width: 200px;
-	height: 200px;
 }
