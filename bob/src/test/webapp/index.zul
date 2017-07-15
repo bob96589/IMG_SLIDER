@@ -1,0 +1,22 @@
+<zk>
+	<window id="window" title="Hello World!!" border="normal" width="1500px" apply="test.ctrl.DemoWindowComposer">
+		<imageslider id="imgSlider" viewportSize="3">
+			<image src="images/ironman-01.jpg"/>
+			<image src="images/ironman-02.jpg"/>
+			<image src="images/ironman-03.jpg"/>
+			<image src="images/ironman-04.jpg"/>
+			<image src="images/ironman-05.jpg"/>
+		</imageslider>
+		
+		
+		<button label="setSelectedItem" width="125px" onClick='imgSlider.setSelectedItem("ww")'/>
+		<button label="setSelectedIndex" width="125px" onClick='imgSlider.setSelectedIndex(1)'/>
+		<button label="setViewportSize" width="125px" onClick='imgSlider.setViewportSize(2)'/>
+		<button label="setImageWidth" width="125px" onClick='imgSlider.setImageWidth(3)'/>
+		
+		<button label="getSelectedItem" width="125px" onClick='window.setTitle(Integer.toString(imgSlider.getSelectedItem()))'/>
+		
+		
+		
+	</window>
+</zk>
