@@ -21,6 +21,8 @@
  */
 bob.Imageslider = zk.$extends(zul.Widget, {
 	_text:'', //default value for text attribute
+	_viewportSize : 3,
+	_imageWidth : 200,
 	
 	/**
 	 * Don't use array/object as a member field, it's a restriction for ZK object,
@@ -49,12 +51,14 @@ bob.Imageslider = zk.$extends(zul.Widget, {
 			}
 		},
 		selectedItem: function(item) { 
-			console.log("selectedItem");
+			console.log("selectedItem" + item);
 			if(this.desktop) {
 			}
 		},
 		selectedIndex: function(index) { 
 			console.log("selectedIndex: " + index);
+			console.log("this: " + JSON.stringify(this));
+			console.log("this.$n(): " + this.$n());
 			if(this.desktop) {
 			}
 		},

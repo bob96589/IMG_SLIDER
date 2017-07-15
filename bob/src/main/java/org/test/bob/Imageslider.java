@@ -36,7 +36,12 @@ public class Imageslider extends XulElement {
 	protected void renderProperties(org.zkoss.zk.ui.sys.ContentRenderer renderer) throws java.io.IOException {
 		super.renderProperties(renderer);
 
-		render(renderer, "text", _text);
+		render(renderer, "selectedItem", _selectedItem);
+		render(renderer, "selectedIndex", _selectedIndex);
+		if(_viewportSize != 3) 
+			render(renderer, "viewportSize", _viewportSize);
+		if(_imageWidth != 200) 
+			render(renderer, "imageWidth", _imageWidth);
 	}
 
 	public void service(AuRequest request, boolean everError) {
@@ -64,8 +69,8 @@ public class Imageslider extends XulElement {
 	
 	private Image _selectedItem;
 	private int _selectedIndex;
-	private int _viewportSize;
-	private int _imageWidth;
+	private int _viewportSize = 3;
+	private int _imageWidth = 200;
 
 	public Image getSelectedItem() {
 		return _selectedItem;

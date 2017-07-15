@@ -21,7 +21,7 @@
             top: 0;
 }
 
-.z-imageslider-block{
+.z-imageslider-img{
 	float: left;
 	width: 200px;
 	height: 200px;

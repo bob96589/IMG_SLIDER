@@ -11,7 +11,7 @@
 		
 		<button label="setSelectedItem" width="125px" onClick='imgSlider.setSelectedItem("ww")'/>
 		<button label="setSelectedIndex" width="125px" onClick='imgSlider.setSelectedIndex(1)'/>
-		<button label="setViewportSize" width="125px" onClick='imgSlider.setViewportSize(2)'/>
+		<button label="setViewportSize" width="125px" onClick='imgSlider.setViewportSize(3)'/>
 		<button label="setImageWidth" width="125px" onClick='imgSlider.setImageWidth(3)'/>
 		
 		<button label="getSelectedItem" width="125px" onClick='window.setTitle(Integer.toString(imgSlider.getSelectedItem()))'/>
