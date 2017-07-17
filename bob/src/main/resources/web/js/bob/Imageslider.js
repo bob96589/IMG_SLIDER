@@ -38,6 +38,25 @@ function _doAnimation(wgt, flag) {
 }
 
 
+function _updateImgListWidth(wgt) {
+	wgt.$n('imgList').style.width = wgt._imageWidth * wgt.nChildren + 'px';
+}
+
+function _updateWrapperWidth(wgt) {
+	wgt.$n('wrapper').style.width = wgt._imageWidth * wgt._viewportSize + 'px';
+}
+
+function _updateBtnVisibility(wgt) {
+	if(wgt.nChildren > wgt._viewportSize){
+		wgt.$n('prevBtn').style.display = 'inline-block';
+		wgt.$n('nextBtn').style.display = 'inline-block';
+	}else{
+		wgt.$n('prevBtn').style.display = 'none';
+		wgt.$n('nextBtn').style.display = 'none';
+	}
+}
+
+
 
 
 bob.Imageslider = zk.$extends(zul.Widget, {
@@ -73,58 +92,36 @@ bob.Imageslider = zk.$extends(zul.Widget, {
 			}
 		},
 		selectedItem: function(item) { 
-			
 			if(this.desktop) {
 				console.log("selectedItem" + item);
 			}
 		},
-		selectedIndex: function(index) { 
-			console.log("selectedIndex:------------------------- " + index);
+		selectedIndex: function() { 
 			if(this.desktop) {
-				console.log("selectedIndex: " + index);
 				var i = 0;
 				for (var w = this.firstChild; w; w = w.nextSibling) {
-					w.$n().parentNode.className = this.$s('img');
-					if(i == index){
-						w.$n().parentNode.className += ' ' + this.$s('selectImg');
+					this._chdextr(w).className = this.$s('img');
+					if(i == this._selectedIndex){
+						this._chdextr(w).className += ' ' + this.$s('selectImg');
 					}
 					i++;
 				}
 
 			}
 		},
-		viewportSize: function(size) {		
+		viewportSize: function() {		
 			if(this.desktop) {
-				console.log(this.nChildren);
-				if(this.nChildren > size){
-					this.$n('prevBtn').style.display = 'inline-block';
-					this.$n('nextBtn').style.display = 'inline-block';
-				}else{
-					this.$n('prevBtn').style.display = 'none';
-					this.$n('nextBtn').style.display = 'none';
-				}				
-				this.$n('wrapper').style.width = this._imageWidth * size + 'px';
+				_updateWrapperWidth(this);
+				_updateBtnVisibility(this);
 			}
 		},
-		imageWidth: function (width) {			
+		imageWidth: function () {			
 			if(this.desktop) {
-				console.log("imageWidth: " + width);
-				
-				var children = jq(this.$n('imgList')).children();
-				var lengthOfChildren = children.length;
-				
-				this.$n('wrapper').style.width = width * this._viewportSize + 'px';
-				this.$n('imgList').style.width = width * lengthOfChildren + 'px';
-				//debugger;
-							
-				for(var i = 0; i < lengthOfChildren; i++){
-					children[i].style.width = width + 'px'; 
+				_updateWrapperWidth(this);
+				_updateImgListWidth(this);
+				for (var w = this.firstChild; w; w = w.nextSibling) {
+					this._chdextr(w).style.width = this._imageWidth + 'px';
 				}
-				
-//				for (var w = this.firstChild; w; w = w.nextSibling) {
-//					var child = w.$n();
-//					child.parentNode.style.width = width + 'px';
-//				}
 			}
 		}
 	},
@@ -178,34 +175,36 @@ bob.Imageslider = zk.$extends(zul.Widget, {
 		please refer to http://books.zkoss.org/wiki/ZK%20Client-side%20Reference/Notifications
 	 */
 	doClick_: function (evt) {
+		console.log('doClick_');
 		if(evt.domTarget == this.$n('prevBtn')){
 			_doAnimation(this, -1);
 		}else if(evt.domTarget == this.$n('nextBtn')){
 			_doAnimation(this, 1);
-		}else if(evt.domTarget.parentNode.className == this.$s('img')){
-			var currentNode = evt.domTarget.parentNode;			
+		}else if(this._chdextr(evt.target).className == this.$s('img')){
+			var currentNode = this._chdextr(evt.target);		
 			var selectedIndex = 0;
 			while( (currentNode = currentNode.previousSibling) != null ) {
 				selectedIndex++;
 			}				
-			//console.log('index: ' +  selectedIndex);
-			this.fire('onSelect', {index: selectedIndex}, {toServer:true});			
+			this.fire('onSelect', {index: selectedIndex, src: evt.target.getSrc()}, {toServer:true});	
 		}
-		
 		this.$super('doClick_', evt, true);
 
 		
 		// add to first
 		//var img = new zul.wgt.Image();
 		//img.setSrc('images/ironman-03.jpg');
-		//this.insertChildHTML_(img, this.firstChild);
+		//this.insertBefore(img, this.firstChild);
 		
 		// add to last
 //		var img = new zul.wgt.Image();
 //		img.setSrc('images/ironman-03.jpg');
-//		this.insertChildHTML_(img);
+//		this.appendChild(img);
 		
-//		debugger;
+		// remove first child
+//		this.removeChild(this.firstChild);	
+		
+		//console.log(this.nChildren);
 
 	},
 	encloseChildHTML_: function(w, out){
@@ -223,26 +222,28 @@ bob.Imageslider = zk.$extends(zul.Widget, {
 		return child.$n('chdex') || child.$n();
 	},
 	insertChildHTML_: function (child, before, desktop) {
-//		debugger;
 		if (before)
 			jq(this._chdextr(before)).before(this.encloseChildHTML_(child));
 		else {
 			var jqn = jq(this.$n('imgList'));
 			jqn.append(this.encloseChildHTML_(child));	
-			
 		}
 		child.bind(desktop);
-		console.log("child: " + this.nChildren);
+		_updateImgListWidth(this);
+		_updateBtnVisibility(this);
 	},
 	removeChildHTML_: function (child) {
-		var node = child.$n().parentNode;
-		if(node.className.indexOf(this.$s('img')) != -1){
-			node.remove();
-		}		
-	},
-	_getChildCnt: function () {
-		return jq('.' + this.$s('img')).length;
+		this.$supers('removeChildHTML_', arguments);
+		jq(this._chdextr(child)).remove();
+	},	
+	onChildRemoved_: function () {
+		this.$supers('onChildRemoved_', arguments);
+		if (this.desktop){
+			_updateImgListWidth(this);
+			_updateBtnVisibility(this);
+		}
 	}
+	
 
 });
 

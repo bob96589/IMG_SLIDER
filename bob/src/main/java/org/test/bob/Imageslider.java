@@ -58,7 +58,9 @@ public class Imageslider extends XulElement {
 			Events.postEvent(Event.getEvent(request));
 		} else if (cmd.equals(Events.ON_SELECT)) {
 			final Integer index = (Integer) data.get("index");
+			final String src = (String) data.get("src");
 			setSelectedIndex(index);
+			setSelectedItem(new Image(src));
 			//new SelectEvent(Events.ON_SELECT, request.getComponent(), null);
 			Events.postEvent(Event.getEvent(request));
 		} else

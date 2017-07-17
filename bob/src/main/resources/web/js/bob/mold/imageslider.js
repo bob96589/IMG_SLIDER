@@ -14,11 +14,6 @@ function (out) {
 	/*
 	 * class="${zcls} ${this.getSclass()}" id="${uuid}"
 	 */
-	console.log('mold.this.getViewportSize(): ' + this.getViewportSize());
-	console.log('mold.this.getImageWidth(): ' + this.getImageWidth());
-	console.log('mold.this.domAttrs_(): ' + this.domAttrs_());
-	console.log('mold.this.nChildren: ' + this.nChildren);
-	
 	out.push('<div ', this.domAttrs_(), '>');
 	
 	

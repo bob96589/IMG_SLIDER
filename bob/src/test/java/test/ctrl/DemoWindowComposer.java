@@ -11,11 +11,11 @@ import org.zkoss.zk.ui.select.annotation.Wire;
 public class DemoWindowComposer extends SelectorComposer {
 	
 	@Wire
-	private Imageslider imgSlider;
+	private Imageslider imgslider;
 	
 	public void doAfterCompose(Component comp) throws Exception {
 		super.doAfterCompose(comp);
-		imgSlider.setText("Hello ZK Component!! Please click me.");
+		imgslider.setText("Hello ZK Component!! Please click me.");
 	}
 	
 	public void onFoo$imgSlider (ForwardEvent event) {
