@@ -5,8 +5,27 @@
 
 .z-imageslider{
      color:black;
+     text-align: center;
 }
 
+.z-imageslider-section {
+            display: inline-block;
+            vertical-align: middle;
+}
+
+.z-imageslider-prevBtn{
+    background: url(${c:encodeURL('images/40_40_left_wb.PNG')});
+    width: 40px;
+    height: 40px;
+}
+.z-imageslider-nextBtn{
+    background: url(${c:encodeURL('images/40_40_right_wb.PNG')});
+    width: 40px;
+    height: 40px;
+}
+.z-imageslider-hidden{
+	display: none;
+}
 
 .z-imageslider-imgListWrapper{
     overflow: hidden;
@@ -22,4 +41,13 @@
 
 .z-imageslider-img{
 	float: left;
+}
+
+.z-imageslider-img img{
+	max-width: 100%;
+    max-height: 100%;
+}
+.z-imageslider-selectImg{
+    border: red 5px solid;
+    width: 200px;
 }

@@ -19,10 +19,32 @@
  * If this.desktop exist , means it's after mold rendering.
  *
  */
+(function () {
+
+var stepMovement;
+
+function _doAnimation(wgt, flag) {
+    if (stepMovement) return;
+    var steps = 20;
+    var dist = wgt.getImageWidth() * flag / steps;   
+    stepMovement = setInterval(function() {
+        if (steps--) {
+        	wgt.$n('wrapper').scrollLeft -= dist;
+        } else {
+            clearInterval(stepMovement);
+            stepMovement = null;
+        }
+    }, 10);
+}
+
+
+
+
 bob.Imageslider = zk.$extends(zul.Widget, {
 	_text:'', //default value for text attribute
 	_viewportSize : 3,
 	_imageWidth : 200,
+	
 	
 	/**
 	 * Don't use array/object as a member field, it's a restriction for ZK object,
@@ -51,33 +73,47 @@ bob.Imageslider = zk.$extends(zul.Widget, {
 			}
 		},
 		selectedItem: function(item) { 
-			console.log("selectedItem" + item);
+			
 			if(this.desktop) {
+				console.log("selectedItem" + item);
 			}
 		},
 		selectedIndex: function(index) { 
-			console.log("selectedIndex: " + index);
+			console.log("selectedIndex:------------------------- " + index);
 			if(this.desktop) {
+				console.log("selectedIndex: " + index);
+				var i = 0;
+				for (var w = this.firstChild; w; w = w.nextSibling) {
+					w.$n().parentNode.className = this.$s('img');
+					if(i == index){
+						w.$n().parentNode.className += ' ' + this.$s('selectImg');
+					}
+					i++;
+				}
+
 			}
 		},
-		viewportSize: function(size) { 			
-			
-			console.log("viewportSize: " + size);
+		viewportSize: function(size) {		
 			if(this.desktop) {
-				//console.log(this.getImageWidth());
-				//console.log(getImageWidth());
-				//console.log(this.imageWidth);
-				//console.log(this.imageWidth());
-				console.log(this._imageWidth);
+				console.log(this.nChildren);
+				if(this.nChildren > size){
+					this.$n('prevBtn').style.display = 'inline-block';
+					this.$n('nextBtn').style.display = 'inline-block';
+				}else{
+					this.$n('prevBtn').style.display = 'none';
+					this.$n('nextBtn').style.display = 'none';
+				}				
 				this.$n('wrapper').style.width = this._imageWidth * size + 'px';
 			}
 		},
-		imageWidth: function (width) {
-			console.log("imageWidth: " + width);
+		imageWidth: function (width) {			
 			if(this.desktop) {
+				console.log("imageWidth: " + width);
+				this.$n('wrapper').style.width = width * this._viewportSize + 'px';
+				this.$n('imgList').style.width = width * this.nChildren + 'px';
 				for (var w = this.firstChild; w; w = w.nextSibling) {
 					var child = w.$n();
-					child.style.width = width + 'px';
+					child.parentNode.style.width = width + 'px';
 				}
 			}
 		}
@@ -132,8 +168,74 @@ bob.Imageslider = zk.$extends(zul.Widget, {
 		please refer to http://books.zkoss.org/wiki/ZK%20Client-side%20Reference/Notifications
 	 */
 	doClick_: function (evt) {
-		console.log('click');
-		this.$super('doClick_', evt, true);//the super doClick_ should be called
-		this.fire('onFoo', {foo: 'myData'});
+		if(evt.domTarget == this.$n('prevBtn')){
+			_doAnimation(this, -1);
+		}else if(evt.domTarget == this.$n('nextBtn')){
+			_doAnimation(this, 1);
+		}else if(evt.domTarget.parentNode.className == this.$s('img')){
+			var currentNode = evt.domTarget.parentNode;			
+			var selectedIndex = 0;
+			while( (currentNode = currentNode.previousSibling) != null ) {
+				selectedIndex++;
+			}				
+			//console.log('index: ' +  selectedIndex);
+			this.fire('onSelect', {index: selectedIndex}, {toServer:true});			
+		}
+		
+		this.$super('doClick_', evt, true);
+
+		
+		// add to first
+		//var img = new zul.wgt.Image();
+		//img.setSrc('images/ironman-03.jpg');
+		//this.insertChildHTML_(img, this.firstChild);
+		
+		// add to last
+//		var img = new zul.wgt.Image();
+//		img.setSrc('images/ironman-03.jpg');
+//		this.insertChildHTML_(img);
+		
+//		debugger;
+
+	},
+	encloseChildHTML_: function(w, out){
+		var oo = new zk.Buffer();
+		
+		oo.push('<div id="' + w.uuid + '-chdex" class="', this.$s('img'), '">');
+		w.redraw(oo);
+		oo.push('</div>');
+		
+		if (!out) return oo.join('');
+
+		out.push(oo.join(''));
+	},
+	_chdextr: function (child) {
+		return child.$n('chdex') || child.$n();
+	},
+	insertChildHTML_: function (child, before, desktop) {
+//		debugger;
+		if (before)
+			jq(this._chdextr(before)).before(this.encloseChildHTML_(child));
+		else {
+			var jqn = jq(this.$n('imgList'));
+			jqn.append(this.encloseChildHTML_(child));	
+			
+		}
+		child.bind(desktop);
+		console.log("child: " + this.nChildren);
+	},
+	removeChildHTML_: function (child) {
+		var node = child.$n().parentNode;
+		if(node.className.indexOf(this.$s('img')) != -1){
+			node.remove();
+		}		
+	},
+	_getChildCnt: function () {
+		return jq('.' + this.$s('img')).length;
 	}
+
 });
+
+
+
+})();

@@ -1,6 +1,6 @@
 <zk>
 	<window id="window" title="Hello World!!" border="normal" width="1500px" apply="test.ctrl.DemoWindowComposer">
-		<imageslider id="imgSlider" viewportSize="3" width="800px">
+		<imageslider id="imgSlider" viewportSize="5">
 			<image src="images/ironman-01.jpg"/>
 			<image src="images/ironman-02.jpg"/>
 			<image src="images/ironman-03.jpg"/>
@@ -15,10 +15,12 @@
 		<button label="setViewportSize" width="125px" onClick='imgSlider.setViewportSize(Integer.parseInt(input.getValue()))'/>
 		<button label="setImageWidth" width="125px" onClick='imgSlider.setImageWidth(Integer.parseInt(input.getValue()))'/>
 		
-		
+		<button label="----------------------"   width="125px" onClick='window.setTitle(input.getValue())'/>
 
-		<button label="getSelectedItem" width="125px" onClick='window.setTitle(Integer.toString(imgSlider.getSelectedItem()))'/>
-		<button label="Left"   width="125px" onClick='window.setTitle(input.getValue())'/>
+		<button label="getSelectedIndex" width="125px" onClick='window.setTitle(Integer.toString(imgSlider.getSelectedIndex()))'/>
+		<button label="getViewportSize" width="125px" onClick='window.setTitle(Integer.toString(imgSlider.getViewportSize()))'/>
+		<button label="getImageWidth" width="125px" onClick='window.setTitle(Integer.toString(imgSlider.getImageWidth()))'/>
+		
 		
 		
 		

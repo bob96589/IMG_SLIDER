@@ -17,16 +17,28 @@ function (out) {
 	console.log('mold.this.getViewportSize(): ' + this.getViewportSize());
 	console.log('mold.this.getImageWidth(): ' + this.getImageWidth());
 	console.log('mold.this.domAttrs_(): ' + this.domAttrs_());
+	console.log('mold.this.nChildren: ' + this.nChildren);
 	
 	out.push('<div ', this.domAttrs_(), '>');
 	
-	out.push('<div id="', uuid, '-wrapper" class="', this.$s('imgListWrapper'), '"><div class="', this.$s('imgList'), '">');
+	
+	var btnDisplayStyle = this.nChildren > this.getViewportSize() ? ' ' : ' style="display: none"'
+	// prevBtn
+	out.push('<div id="', uuid, '-prevBtn" class="', this.$s('prevBtn'), ' ', this.$s('section'), '"' + btnDisplayStyle + '>');
+	out.push('</div>');
+	
+	// imgListWrapper
+	out.push('<div id="', uuid, '-wrapper" class="', this.$s('imgListWrapper'), ' ', this.$s('section'), '" style="width: ', this.getViewportSize() * this.getImageWidth() , 'px">');
+	out.push('<div id="', uuid, '-imgList"  class="', this.$s('imgList'), '">');
 	for (var w = this.firstChild; w; w = w.nextSibling) {
-		out.push('<div class="', this.$s('img'), '">');
-		w.redraw(out);
-		out.push('</div>');
+		this.encloseChildHTML_(w, out);		
 	}
-	out.push('</div></div>');
+	out.push('</div>');
+	out.push('</div>');
+	
+	// nextBtn
+	out.push('<div id="', uuid, '-nextBtn" class="', this.$s('nextBtn'), ' ', this.$s('section'), '"' + btnDisplayStyle + '>');
+	out.push('</div>');
 	
 	out.push('</div>');
 

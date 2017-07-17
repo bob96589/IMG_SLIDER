@@ -18,7 +18,12 @@ public class DemoWindowComposer extends SelectorComposer {
 		imgSlider.setText("Hello ZK Component!! Please click me.");
 	}
 	
-	public void onFoo$myComp (ForwardEvent event) {
+	public void onFoo$imgSlider (ForwardEvent event) {
+		Event mouseEvent = (Event) event.getOrigin();
+		alert("You listen onFoo: " + mouseEvent.getTarget());
+	}
+	
+	public void onSelect$imgSlider (ForwardEvent event) {
 		Event mouseEvent = (Event) event.getOrigin();
 		alert("You listen onFoo: " + mouseEvent.getTarget());
 	}

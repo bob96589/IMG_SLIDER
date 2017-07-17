@@ -1,6 +1,8 @@
 package org.test.bob;
 
+import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.zkoss.lang.Objects;
 import org.zkoss.zk.au.AuRequest;
@@ -8,14 +10,16 @@ import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.UiException;
 import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.Events;
+import org.zkoss.zk.ui.event.SelectEvent;
 import org.zkoss.zul.Image;
 import org.zkoss.zul.impl.XulElement;
 
+@SuppressWarnings("serial")
 public class Imageslider extends XulElement {
 
 	static {
 		addClientEvent(Imageslider.class, "onFoo", 0);
-		addClientEvent(Imageslider.class, Events.ON_SELECT, 0);
+		addClientEvent(Imageslider.class, Events.ON_SELECT, CE_IMPORTANT);
 	}
 
 	/* Here's a simple example for how to implements a member field */
@@ -43,6 +47,7 @@ public class Imageslider extends XulElement {
 			render(renderer, "imageWidth", _imageWidth);
 	}
 
+	@SuppressWarnings("rawtypes")
 	public void service(AuRequest request, boolean everError) {
 		final String cmd = request.getCommand();
 		final Map data = request.getData();
@@ -51,12 +56,15 @@ public class Imageslider extends XulElement {
 			final String foo = (String) data.get("foo");
 			System.out.println("do onFoo, data:" + foo);
 			Events.postEvent(Event.getEvent(request));
-		}else if (cmd.equals(Events.ON_SELECT)) {
-			
-			
+		} else if (cmd.equals(Events.ON_SELECT)) {
+			final Integer index = (Integer) data.get("index");
+			setSelectedIndex(index);
+			//new SelectEvent(Events.ON_SELECT, request.getComponent(), null);
+			Events.postEvent(Event.getEvent(request));
 		} else
 			super.service(request, everError);
 	}
+	
 
 	/**
 	 * The default zclass is "z-imageslider"
