@@ -109,12 +109,22 @@ bob.Imageslider = zk.$extends(zul.Widget, {
 		imageWidth: function (width) {			
 			if(this.desktop) {
 				console.log("imageWidth: " + width);
+				
+				var children = jq(this.$n('imgList')).children();
+				var lengthOfChildren = children.length;
+				
 				this.$n('wrapper').style.width = width * this._viewportSize + 'px';
-				this.$n('imgList').style.width = width * this.nChildren + 'px';
-				for (var w = this.firstChild; w; w = w.nextSibling) {
-					var child = w.$n();
-					child.parentNode.style.width = width + 'px';
+				this.$n('imgList').style.width = width * lengthOfChildren + 'px';
+				//debugger;
+							
+				for(var i = 0; i < lengthOfChildren; i++){
+					children[i].style.width = width + 'px'; 
 				}
+				
+//				for (var w = this.firstChild; w; w = w.nextSibling) {
+//					var child = w.$n();
+//					child.parentNode.style.width = width + 'px';
+//				}
 			}
 		}
 	},
@@ -201,7 +211,7 @@ bob.Imageslider = zk.$extends(zul.Widget, {
 	encloseChildHTML_: function(w, out){
 		var oo = new zk.Buffer();
 		
-		oo.push('<div id="' + w.uuid + '-chdex" class="', this.$s('img'), '">');
+		oo.push('<div id="' + w.uuid + '-chdex" class="', this.$s('img'), '" style="width:', this._imageWidth, 'px">');
 		w.redraw(oo);
 		oo.push('</div>');
 		
