@@ -14,12 +14,12 @@
 }
 
 .z-imageslider-prevBtn{
-    background: url(${c:encodeURL('images/40_40_left_wb.PNG')});
+    background: url(${c:encodeURL('~./img/40_40_left_wb.PNG')});
     width: 40px;
     height: 40px;
 }
 .z-imageslider-nextBtn{
-    background: url(${c:encodeURL('images/40_40_right_wb.PNG')});
+    background: url(${c:encodeURL('~./img/40_40_right_wb.PNG')});
     width: 40px;
     height: 40px;
 }
@@ -43,8 +43,8 @@
 }
 
 .z-imageslider-img img{
-	max-width: 100%;
-    max-height: 100%;
+	width: 100%;
+    height: 100%;
 }
 
 .z-imageslider-selectImg{

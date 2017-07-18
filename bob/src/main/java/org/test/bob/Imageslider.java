@@ -25,9 +25,13 @@ public class Imageslider extends XulElement {
 	private int _viewportSize = 3;
 	private int _imageWidth = 200;
 
+	private boolean isIndexOutOfBound(List<Image> children, int index) {
+		return index < 0 || index >= children.size();
+	}
+
 	public Image getSelectedItem() {
 		List<Image> children = this.<Image>getChildren();
-		if (_selectedIndex < 0 || _selectedIndex >= children.size()) {
+		if (isIndexOutOfBound(children, _selectedIndex)) {
 			return null;
 		} else {
 			return children.get(_selectedIndex);
@@ -37,8 +41,8 @@ public class Imageslider extends XulElement {
 	// TODO
 	public void setSelectedItem(Image img) {
 		if (!Objects.equals(_selectedItem, img)) {
-			_selectedItem = img;
-			smartUpdate("selectedItem", _selectedItem);
+			List<Image> children = this.<Image>getChildren();
+			setSelectedIndex(children.indexOf(img));
 		}
 	};
 
@@ -48,8 +52,18 @@ public class Imageslider extends XulElement {
 
 	public void setSelectedIndex(int index) {
 		if (_selectedIndex != index) {
+			// update index
 			_selectedIndex = index;
 			smartUpdate("selectedIndex", _selectedIndex);
+			
+			// update Image
+			List<Image> children = this.<Image>getChildren();
+			Image image = null;
+			if (!isIndexOutOfBound(children, _selectedIndex)) {
+				image = children.get(_selectedIndex);
+			} 
+			this._selectedItem = image;
+			smartUpdate("selectedItem", _selectedItem);
 		}
 	};
 
