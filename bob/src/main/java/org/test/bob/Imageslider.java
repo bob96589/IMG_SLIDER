@@ -1,8 +1,7 @@
 package org.test.bob;
 
-import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.zkoss.lang.Objects;
 import org.zkoss.zk.au.AuRequest;
@@ -18,76 +17,24 @@ import org.zkoss.zul.impl.XulElement;
 public class Imageslider extends XulElement {
 
 	static {
-		addClientEvent(Imageslider.class, "onFoo", 0);
-		addClientEvent(Imageslider.class, Events.ON_SELECT, CE_IMPORTANT);
+		addClientEvent(Imageslider.class, Events.ON_SELECT, CE_IMPORTANT | CE_DUPLICATE_IGNORE);
 	}
 
-	/* Here's a simple example for how to implements a member field */
-
-	private String _text;
-
-	public String getText() {
-		return _text;
-	}
-
-	public void setText(String text) {
-		if (!Objects.equals(_text, text)) {
-			_text = text;
-			smartUpdate("text", _text);
-		}
-	}
-
-	// super//
-	protected void renderProperties(org.zkoss.zk.ui.sys.ContentRenderer renderer) throws java.io.IOException {
-		super.renderProperties(renderer);
-
-		render(renderer, "selectedItem", _selectedItem);
-		render(renderer, "selectedIndex", _selectedIndex);
-			render(renderer, "viewportSize", _viewportSize);
-			render(renderer, "imageWidth", _imageWidth);
-	}
-
-	@SuppressWarnings("rawtypes")
-	public void service(AuRequest request, boolean everError) {
-		final String cmd = request.getCommand();
-		final Map data = request.getData();
-
-		if (cmd.equals("onFoo")) {
-			final String foo = (String) data.get("foo");
-			System.out.println("do onFoo, data:" + foo);
-			Events.postEvent(Event.getEvent(request));
-		} else if (cmd.equals(Events.ON_SELECT)) {
-			final Integer index = (Integer) data.get("index");
-			final String src = (String) data.get("src");
-			setSelectedIndex(index);
-			setSelectedItem(new Image(src));
-			//new SelectEvent(Events.ON_SELECT, request.getComponent(), null);
-			Events.postEvent(Event.getEvent(request));
-		} else
-			super.service(request, everError);
-	}
-	
-
-	/**
-	 * The default zclass is "z-imageslider"
-	 */
-	public String getZclass() {
-		return (this._zclass != null ? this._zclass : "z-imageslider");
-	}
-
-	// ----------------------------------------------------------------------------------------
-
-	// can't not be null ??
-	
 	private Image _selectedItem;
-	private int _selectedIndex;
+	private int _selectedIndex = -1;
 	private int _viewportSize = 3;
 	private int _imageWidth = 200;
 
 	public Image getSelectedItem() {
-		return _selectedItem;
+		List<Image> children = this.<Image>getChildren();
+		if (_selectedIndex < 0 || _selectedIndex >= children.size()) {
+			return null;
+		} else {
+			return children.get(_selectedIndex);
+		}
 	};
 
+	// TODO
 	public void setSelectedItem(Image img) {
 		if (!Objects.equals(_selectedItem, img)) {
 			_selectedItem = img;
@@ -127,8 +74,38 @@ public class Imageslider extends XulElement {
 			smartUpdate("imageWidth", _imageWidth);
 		}
 	}
-	
-	// ----------------------------------------------------------------------------------------
+
+	protected void renderProperties(org.zkoss.zk.ui.sys.ContentRenderer renderer) throws java.io.IOException {
+		super.renderProperties(renderer);
+		// _selectedItem or _selectedIndex
+		// render(renderer, "selectedItem", _selectedItem);
+		if (_selectedIndex != -1) {
+			render(renderer, "selectedIndex", _selectedIndex);
+		}
+		if (_viewportSize != 3) {
+			render(renderer, "viewportSize", _viewportSize);
+		}
+		if (_imageWidth != 200) {
+			render(renderer, "imageWidth", _imageWidth);
+		}
+	}
+
+	@SuppressWarnings("rawtypes")
+	public void service(AuRequest request, boolean everError) {
+		final String cmd = request.getCommand();
+		final Map data = request.getData();
+		if (cmd.equals(Events.ON_SELECT)) {
+			final Integer index = (Integer) data.get("index");
+			setSelectedIndex(index);
+			SelectEvent s = SelectEvent.getSelectEvent(request);
+			Events.postEvent(s);
+		} else
+			super.service(request, everError);
+	}
+
+	public String getZclass() {
+		return (this._zclass != null ? this._zclass : "z-imageslider");
+	}
 
 	public void beforeChildAdded(Component child, Component refChild) {
 		if (!(child instanceof Image))
@@ -136,4 +113,3 @@ public class Imageslider extends XulElement {
 		super.beforeChildAdded(child, refChild);
 	}
 }
-

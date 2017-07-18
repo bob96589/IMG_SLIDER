@@ -9,8 +9,8 @@
 }
 
 .z-imageslider-section {
-            display: inline-block;
-            vertical-align: middle;
+	display: inline-block;
+	vertical-align: middle;
 }
 
 .z-imageslider-prevBtn{
@@ -31,7 +31,6 @@
     overflow: hidden;
 }
 
-
 .z-imageslider-imgList{
             width: 1000px;
             position: relative;
@@ -47,6 +46,7 @@
 	max-width: 100%;
     max-height: 100%;
 }
+
 .z-imageslider-selectImg{
     border: red 5px solid;
     width: 200px;
