@@ -7,7 +7,6 @@ import org.zkoss.lang.Objects;
 import org.zkoss.zk.au.AuRequest;
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.UiException;
-import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.Events;
 import org.zkoss.zk.ui.event.SelectEvent;
 import org.zkoss.zul.Image;
@@ -25,26 +24,21 @@ public class Imageslider extends XulElement {
 	private int _viewportSize = 3;
 	private int _imageWidth = 200;
 
-	private boolean isIndexOutOfBound(List<Image> children, int index) {
-		return index < 0 || index >= children.size();
+	public Image getSelectedItem() {
+		Image image = null;
+		List<Image> children = this.<Image>getChildren();
+		if (!isIndexOutOfBound(children, _selectedIndex)) {
+			image = children.get(_selectedIndex);
+		}
+		return image;
 	}
 
-	public Image getSelectedItem() {
-		List<Image> children = this.<Image>getChildren();
-		if (isIndexOutOfBound(children, _selectedIndex)) {
-			return null;
-		} else {
-			return children.get(_selectedIndex);
-		}
-	};
-
-	// TODO
 	public void setSelectedItem(Image img) {
 		if (!Objects.equals(_selectedItem, img)) {
 			List<Image> children = this.<Image>getChildren();
 			setSelectedIndex(children.indexOf(img));
 		}
-	};
+	}
 
 	public int getSelectedIndex() {
 		return _selectedIndex;
@@ -52,20 +46,23 @@ public class Imageslider extends XulElement {
 
 	public void setSelectedIndex(int index) {
 		if (_selectedIndex != index) {
+
 			// update index
 			_selectedIndex = index;
 			smartUpdate("selectedIndex", _selectedIndex);
-			
-			// update Image
+
+			// update image
 			List<Image> children = this.<Image>getChildren();
 			Image image = null;
-			if (!isIndexOutOfBound(children, _selectedIndex)) {
+			if (!isIndexOutOfBound(children, index)) {
 				image = children.get(_selectedIndex);
-			} 
-			this._selectedItem = image;
-			smartUpdate("selectedItem", _selectedItem);
+			}
+			if (!Objects.equals(_selectedItem, image)) {
+				_selectedItem = image;
+				smartUpdate("selectedItem", image);
+			}
 		}
-	};
+	}
 
 	public int getViewportSize() {
 		return _viewportSize;
@@ -87,6 +84,10 @@ public class Imageslider extends XulElement {
 			_imageWidth = width;
 			smartUpdate("imageWidth", _imageWidth);
 		}
+	}
+
+	private boolean isIndexOutOfBound(List<Image> children, int index) {
+		return index < 0 || index >= children.size();
 	}
 
 	protected void renderProperties(org.zkoss.zk.ui.sys.ContentRenderer renderer) throws java.io.IOException {
@@ -125,5 +126,22 @@ public class Imageslider extends XulElement {
 		if (!(child instanceof Image))
 			throw new UiException("Unsupported child for imageslider: " + child);
 		super.beforeChildAdded(child, refChild);
+	}
+
+	public void onChildAdded(Component child) {
+		updateSelectedIndex();
+		super.onChildAdded(child);
+	}
+
+	public void onChildRemoved(Component child) {
+		updateSelectedIndex();
+		super.onChildRemoved(child);
+	}
+
+	private void updateSelectedIndex() {
+		if (_selectedItem != null) {
+			int newIndex = getChildren().indexOf(_selectedItem);
+			setSelectedIndex(newIndex);
+		}
 	}
 }

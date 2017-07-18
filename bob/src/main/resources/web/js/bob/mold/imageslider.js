@@ -1,32 +1,21 @@
-/**
- * Here's the mold file , a mold means a HTML struct that the widget really presented.
- * yep, we build html in Javascript , that make it more clear and powerful.
- */
 function(out) {
-
-	// redraw
-	
-    // Here you call the "this" means the widget instance. (@see Imageslider.js)
-
     var zcls = this.getZclass(),
         uuid = this.uuid;
+    console.log("this._viewportSize" + this._viewportSize);
+    console.log("this._imageWidth" + this._imageWidth);
+    console.log("this._selectedIndex" + this._selectedIndex);
 
-    // The this.domAttrs_() means it will prepare some dom attributes,
-    // like the pseudo code below
-    /*
-     * class="${zcls} ${this.getSclass()}" id="${uuid}"
-     */
+
     out.push('<div ', this.domAttrs_(), '>');
 
-
-    var btnDisplayStyle = this.nChildren > this._viewportSize ? ' ' : ' style="display: none"'
+    var btnHiddenClass = this.nChildren > this._viewportSize ? '' : ' ' + this.$s('hidden');
     // prevBtn
-    out.push('<div id="', uuid, '-prevBtn" class="', this.$s('prevBtn'), ' ', this.$s('section'), '"' + btnDisplayStyle + '>');
+    out.push('<div id="', uuid, '-prevBtn" class="', this.$s('prevBtn'), ' ', this.$s('section'), btnHiddenClass, '">');
     out.push('</div>');
 
-    // imgListWrapper
-    out.push('<div id="', uuid, '-wrapper" class="', this.$s('imgListWrapper'), ' ', this.$s('section'), '" style="width: ', this._viewportSize * this._imageWidth, 'px">');
-    out.push('<div id="', uuid, '-imgList"  class="', this.$s('imgList'), '">');
+    // wrapper
+    out.push('<div id="', uuid, '-wrapper" class="', this.$s('wrapper'), ' ', this.$s('section'), '" style="width: ', this._viewportSize * this._imageWidth, 'px">');
+    out.push('<div id="', uuid, '-imgList"  class="', this.$s('imgList'), '" style="width: ', this.nChildren * this._imageWidth, 'px">');
     for (var w = this.firstChild; w; w = w.nextSibling) {
         this.encloseChildHTML_(w, out);
     }
@@ -34,9 +23,8 @@ function(out) {
     out.push('</div>');
 
     // nextBtn
-    out.push('<div id="', uuid, '-nextBtn" class="', this.$s('nextBtn'), ' ', this.$s('section'), '"' + btnDisplayStyle + '>');
+    out.push('<div id="', uuid, '-nextBtn" class="', this.$s('nextBtn'), ' ', this.$s('section'), btnHiddenClass, '">');
     out.push('</div>');
 
     out.push('</div>');
-
 }

@@ -13,6 +13,8 @@
 	vertical-align: middle;
 }
 
+/** button **/
+
 .z-imageslider-prevBtn{
     background: url(${c:encodeURL('~./img/40_40_left_wb.PNG')});
     width: 40px;
@@ -27,7 +29,9 @@
 	display: none;
 }
 
-.z-imageslider-imgListWrapper{
+/** image **/
+
+.z-imageslider-wrapper{
     overflow: hidden;
 }
 
@@ -47,7 +51,7 @@
     height: 100%;
 }
 
-.z-imageslider-selectImg{
+.z-imageslider-selectedImg{
     border: red 5px solid;
     width: 200px;
 }

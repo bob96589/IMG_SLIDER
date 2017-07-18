@@ -11,29 +11,19 @@
 		<textbox id="input" value="100" width="150px" />
 		
 		<separator />
-		
-		<button label="setSelectedItem" width="125px" onClick='imgslider.setSelectedItem(imgslider.getChildren().get(1))'/>
-		<button label="setSelectedIndex" width="125px" onClick='imgslider.setSelectedIndex(Integer.parseInt(input.getValue()))'/>
-		<button label="setViewportSize" width="125px" onClick='imgslider.setViewportSize(Integer.parseInt(input.getValue()))'/>
-		<button label="setImageWidth" width="125px" onClick='imgslider.setImageWidth(Integer.parseInt(input.getValue()))'/>
-		
+			<button label="setSelectedItem" width="125px" onClick='imgslider.setSelectedItem(imgslider.getChildren().get(Integer.parseInt(input.getValue())))'/>
+			<button label="setSelectedIndex" width="125px" onClick='imgslider.setSelectedIndex(Integer.parseInt(input.getValue()))'/>
+			<button label="setViewportSize" width="125px" onClick='imgslider.setViewportSize(Integer.parseInt(input.getValue()))'/>
+			<button label="setImageWidth" width="125px" onClick='imgslider.setImageWidth(Integer.parseInt(input.getValue()))'/>
 		<separator />
-
-		<button label="getSelectedIndex" width="125px" onClick='window.setTitle(Integer.toString(imgslider.getSelectedIndex()))'/>
-		<button label="getViewportSize" width="125px" onClick='window.setTitle(Integer.toString(imgslider.getViewportSize()))'/>
-		<button label="getImageWidth" width="125px" onClick='window.setTitle(Integer.toString(imgslider.getImageWidth()))'/>
-		
+			<button label="getSelectedIndex" width="125px" onClick='window.setTitle(Integer.toString(imgslider.getSelectedIndex()))'/>
+			<button label="getViewportSize" width="125px" onClick='window.setTitle(Integer.toString(imgslider.getViewportSize()))'/>
+			<button label="getImageWidth" width="125px" onClick='window.setTitle(Integer.toString(imgslider.getImageWidth()))'/>
 		<separator />
-		
-		<button label="delete_index_0"   width="125px" onClick='imgslider.getChildren().get(0).detach()'/>
-		<button label="delete_index_1"   width="125px" onClick='imgslider.getChildren().get(1).detach()'/>
-		<button label="delete_index_2"   width="125px" onClick='imgslider.getChildren().get(2).detach()'/>
-		<button label="delete_index_3"   width="125px" onClick='imgslider.getChildren().get(3).detach()'/>
-		<button label="delete_index_4"   width="125px" onClick='imgslider.getChildren().get(4).detach()'/>
-		
+			<button label="deleteSelectedItem"   width="125px" onClick='imgslider.getSelectedItem().detach()'/>
 		<separator />
-		
-		<button label="add_child_at_index_1" width="125px" onClick='imgslider.getChildren().add(new Image("images/ironman-03.jpg"))'/>
+			<button label="AddItemAtIndex" width="125px" onClick='imgslider.getChildren().add(Integer.parseInt(input.getValue()), new Image("images/ironman-03.jpg"))'/>
+			<button label="AddItemAtLast" width="125px" onClick='imgslider.getChildren().add(new Image("images/ironman-03.jpg"))'/>
 		
 		
 	</window>
