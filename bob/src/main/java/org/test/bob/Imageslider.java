@@ -3,7 +3,6 @@ package org.test.bob;
 import java.util.List;
 import java.util.Map;
 
-import org.zkoss.lang.Objects;
 import org.zkoss.zk.au.AuRequest;
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.UiException;
@@ -19,7 +18,6 @@ public class Imageslider extends XulElement {
 		addClientEvent(Imageslider.class, Events.ON_SELECT, CE_IMPORTANT | CE_DUPLICATE_IGNORE);
 	}
 
-	private Image _selectedItem;
 	private int _selectedIndex = -1;
 	private int _viewportSize = 3;
 	private int _imageWidth = 200;
@@ -34,9 +32,13 @@ public class Imageslider extends XulElement {
 	}
 
 	public void setSelectedItem(Image img) {
-		if (!Objects.equals(_selectedItem, img)) {
-			List<Image> children = this.<Image>getChildren();
-			setSelectedIndex(children.indexOf(img));
+		if (img == null) {
+			return;
+		}
+		List<Image> children = this.<Image>getChildren();
+		int index = children.indexOf(img);
+		if (index != -1) {
+			setSelectedIndex(index);
 		}
 	}
 
@@ -45,22 +47,13 @@ public class Imageslider extends XulElement {
 	}
 
 	public void setSelectedIndex(int index) {
+		List<Image> children = this.<Image>getChildren();
+		if(isIndexOutOfBound(children, index)) {
+			//throw new IndexOutOfBoundsException("size: " + children.size() + ", input index: " + index);
+		}
 		if (_selectedIndex != index) {
-
-			// update index
 			_selectedIndex = index;
 			smartUpdate("selectedIndex", _selectedIndex);
-
-			// update image
-			List<Image> children = this.<Image>getChildren();
-			Image image = null;
-			if (!isIndexOutOfBound(children, index)) {
-				image = children.get(_selectedIndex);
-			}
-			if (!Objects.equals(_selectedItem, image)) {
-				_selectedItem = image;
-				smartUpdate("selectedItem", image);
-			}
 		}
 	}
 
@@ -92,8 +85,6 @@ public class Imageslider extends XulElement {
 
 	protected void renderProperties(org.zkoss.zk.ui.sys.ContentRenderer renderer) throws java.io.IOException {
 		super.renderProperties(renderer);
-		// _selectedItem or _selectedIndex
-		// render(renderer, "selectedItem", _selectedItem);
 		if (_selectedIndex != -1) {
 			render(renderer, "selectedIndex", _selectedIndex);
 		}
@@ -108,12 +99,12 @@ public class Imageslider extends XulElement {
 	@SuppressWarnings("rawtypes")
 	public void service(AuRequest request, boolean everError) {
 		final String cmd = request.getCommand();
-		final Map data = request.getData();
 		if (cmd.equals(Events.ON_SELECT)) {
-			final Integer index = (Integer) data.get("index");
+			SelectEvent<Image, Object> event = SelectEvent.getSelectEvent(request);
+			List<Image> children = this.<Image>getChildren();
+			int index = children.indexOf(event.getReference());
 			setSelectedIndex(index);
-			SelectEvent s = SelectEvent.getSelectEvent(request);
-			Events.postEvent(s);
+			Events.postEvent(event);
 		} else
 			super.service(request, everError);
 	}
@@ -123,25 +114,30 @@ public class Imageslider extends XulElement {
 	}
 
 	public void beforeChildAdded(Component child, Component refChild) {
-		if (!(child instanceof Image))
+		if (!(child instanceof Image)) {
 			throw new UiException("Unsupported child for imageslider: " + child);
+		}
+
+		if (refChild != null) {
+			List<Image> children = this.<Image>getChildren();
+			int index = children.indexOf(refChild);
+			if (_selectedIndex >= index) {
+				setSelectedIndex(_selectedIndex + 1);
+			}
+		}
+
 		super.beforeChildAdded(child, refChild);
 	}
 
-	public void onChildAdded(Component child) {
-		updateSelectedIndex();
-		super.onChildAdded(child);
-	}
-
-	public void onChildRemoved(Component child) {
-		updateSelectedIndex();
-		super.onChildRemoved(child);
-	}
-
-	private void updateSelectedIndex() {
-		if (_selectedItem != null) {
-			int newIndex = getChildren().indexOf(_selectedItem);
-			setSelectedIndex(newIndex);
+	public void beforeChildRemoved(Component child) {
+		List<Image> children = this.<Image>getChildren();
+		int index = children.indexOf(child);
+		if (_selectedIndex > index) {
+			setSelectedIndex(_selectedIndex - 1);
+		} else if (_selectedIndex == index) {
+			setSelectedIndex(-1);
 		}
+		super.beforeChildRemoved(child);
 	}
+
 }

@@ -1,6 +1,6 @@
 <zk>
-	<window id="window" title="Hello World!!" border="normal" width="1500px" apply="test.ctrl.DemoWindowComposer">
-		<imageslider id="imgslider" onSelect="alert(self.getSelectedItem())" viewportSize="3">
+	<window id="window" title="Hello World!!" border="normal" width="1500px">
+		<imageslider id="imgslider" onSelect="alert(self.getSelectedItem())" viewportSize="3" selectedIndex="0" imageWidth="250">
 			<image src="images/ironman-01.jpg"/>
 			<image src="images/ironman-02.jpg"/>
 			<image src="images/ironman-03.jpg"/>

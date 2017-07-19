@@ -36,10 +36,10 @@
 }
 
 .z-imageslider-imgList{
-            width: 1000px;
-            position: relative;
-            left: 0;
-            top: 0;
+	width: 1000px;
+	position: relative;
+	left: 0;
+	top: 0;
 }
 
 .z-imageslider-img{

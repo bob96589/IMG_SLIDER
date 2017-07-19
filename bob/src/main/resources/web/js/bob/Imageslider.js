@@ -1,24 +1,22 @@
 (function() {
     bob.Imageslider = zk.$extends(zul.Widget, {
-        _selectedIndex: -1,
         _viewportSize: 3,
         _imageWidth: 200,
         $define: {
-            selectedItem: function() {},
             viewportSize: function() {
                 if (this.desktop) {
+                	console.log('viewportSize');
                     this._updateWrapperWidth();
                     this._updateBtnVisibility();
                 }
             },
             imageWidth: function() {
                 if (this.desktop) {
+                	console.log('imageWidth');
                     this._updateWrapperWidth();
                     this._updateImgListWidth();
                     this._updateScrollLeftOfWrapper();
-                    for (var w = this.firstChild; w; w = w.nextSibling) {
-                        this._chdex(w).style.width = this._imageWidth + 'px';
-                    }
+                    this._updateChildrenWidth();
                 }
             }
         },
@@ -26,13 +24,46 @@
             return this._selectedIndex;
         },
         setSelectedIndex: function(index) {
-            if (this.desktop) {
-                this._highlightSelectedItem(index);
-                if (index >= 0) {
-                    this._updateScrollLeftOfWrapper(index);
+        	console.log('setSelectedIndex');
+            var prevIndex = this._selectedIndex;
+            if (index != prevIndex) {
+                this._selectedIndex = index;
+                if (this.desktop) {
+                    this._highlightSelectedItem(prevIndex);
+                    if (index >= 0) {
+                        this._updateScrollLeftOfWrapper();
+                    }
                 }
             }
-            this._selectedIndex = index;
+        },
+        bind_: function() {
+            this.$supers(bob.Imageslider, 'bind_', arguments);
+            zWatch.listen({
+                onResponse: this
+            });
+            if (this.desktop) {
+            	console.log('bind_');
+                this._updateBtnVisibility();
+                this._updateWrapperWidth();
+                this._updateImgListWidth();
+                this._highlightSelectedItem();
+                this._updateChildrenWidth();
+            }
+        },
+        unbind_: function() {
+            zWatch.unlisten({
+                onResponse: this
+            });
+            this.$supers(bob.Imageslider, 'unbind_', arguments);
+        },
+        onResponse: function() {
+            if (this.desktop && this._isChildModified) {
+                console.log('onResponse');
+                this._updateImgListWidth();
+                this._updateChildrenWidth();
+                this._updateBtnVisibility();
+                this._isChildModified = false;
+            }
         },
         doClick_: function(evt) {
             var target = evt.target;
@@ -42,17 +73,16 @@
                 this._doAnimation(1);
             } else if (this._chdex(target) && 　this._chdex(target).className == this.$s('img')) {
                 this.fire('onSelect', {
-                    index: target.getChildIndex(),
-                    items: [target.uuid],
+                    items: [target],
+                    reference: target
                 });
             } else {
                 this.$super('doClick_', evt, true);
             }
         },
         encloseChildHTML_: function(w, out) {
-            var oo = new zk.Buffer(),
-                className = this.$s('img') + (w.getChildIndex() == this._selectedIndex ? ' ' + this.$s('selectedImg') : '');
-            oo.push('<div id="' + w.uuid + '-chdex" class="', className, '" style="width:', this._imageWidth, 'px">');
+            var oo = new zk.Buffer();;
+            oo.push('<div id="' + w.uuid + '-chdex"  class="', this.$s('img'), '">');
             w.redraw(oo);
             oo.push('</div>');
             if (!out) return oo.join('');
@@ -62,56 +92,56 @@
             return child.$n('chdex');
         },
         insertChildHTML_: function(child, before, desktop) {
+        	var childHtml = this.encloseChildHTML_(child);
             if (before)
-                jq(this._chdex(before)).before(this.encloseChildHTML_(child));
+                jq(this._chdex(before)).before(childHtml);
             else {
                 var jqn = jq(this.$n('imgList'));
-                jqn.append(this.encloseChildHTML_(child));
+                jqn.append(childHtml);
             }
             child.bind(desktop);
+          //this._chdex(child).style.width = jq.px0(this._imageWidth);
+            this._isChildModified = true;
         },
         removeChildHTML_: function(child) {
             var id = child.uuid;
             this.$supers('removeChildHTML_', arguments);
             jq('#' + id + '-chdex').remove();
-        },
-        onChildAdded_: function(child) {
-            this.$supers('onChildAdded_', arguments);
-            if (this.desktop) {
-                this._updateImgListWidth();
-                this._updateBtnVisibility();
-            }
-        },
-        onChildRemoved_: function() {
-            this.$supers('onChildRemoved_', arguments);
-            if (this.desktop) {
-                this._updateImgListWidth();
-                this._updateBtnVisibility();
-            }
+            this._isChildModified = true;
         },
         _doAnimation: function(flag) {
+        	console.log('_doAnimation');
             var wgt = this;
-            if (wgt.stepMovement) return;
-            var steps = 10;
-            var dist = wgt.getImageWidth() * flag / steps;
-            this.stepMovement = setInterval(function() {
+            if (wgt._stepMovement) return;
+            var steps = 10,
+                dist = wgt.getImageWidth() * flag / steps;
+            this._stepMovement = setInterval(function() {
                 if (wgt.desktop) {
                     if (steps--) {
                         wgt.$n('wrapper').scrollLeft -= dist;
                     } else {
-                        clearInterval(wgt.stepMovement);
-                        wgt.stepMovement = null;
+                        clearInterval(wgt._stepMovement);
+                        wgt._stepMovement = null;
                     }
                 }
             }, 10);
         },
         _updateWrapperWidth: function() {
-            this.$n('wrapper').style.width = this._imageWidth * this._viewportSize + 'px';
+        	console.log('_updateWrapperWidth');
+            this.$n('wrapper').style.width = jq.px0(this._imageWidth * this._viewportSize);
+        },
+        _updateChildrenWidth: function() {
+        	console.log('_updateChildrenWidth');
+            for (var w = this.firstChild; w; w = w.nextSibling) {
+                this._chdex(w).style.width = jq.px0(this._imageWidth);
+            }
         },
         _updateImgListWidth: function() {
-            this.$n('imgList').style.width = this._imageWidth * this.nChildren + 'px';
+        	console.log('_updateImgListWidth');
+            this.$n('imgList').style.width = jq.px0(this._imageWidth * this.nChildren);
         },
         _updateBtnVisibility: function() {
+        	console.log('_updateBtnVisibility');
             var jqPrevBtn = jq(this.$n('prevBtn')),
                 jqNextBtn = jq(this.$n('nextBtn')),
                 hiddenClass = this.$s('hidden');
@@ -125,8 +155,12 @@
                 jqNextBtn.addClass(hiddenClass);
             }
         },
-        _updateScrollLeftOfWrapper: function(index) {
-            index = index ? index : 0;
+        _updateScrollLeftOfWrapper: function() {
+        	console.log('_updateScrollLeftOfWrapper');
+            var index = this._selectedIndex;
+            if (index == -1) {
+                return;
+            }
             var originScrollLeft = this.$n('wrapper').scrollLeft,
                 dist = (index - this._viewportSize + 1) * this._imageWidth,
                 maxDist = index * this._imageWidth;
@@ -134,19 +168,17 @@
                 this.$n('wrapper').scrollLeft = maxDist;
             }
         },
-        _highlightSelectedItem: function(index) {
+        _highlightSelectedItem: function(prevIndex) {
+        	console.log('_highlightSelectedItem');
+            var prevSelectedWgt = this.getChildAt(prevIndex),
+                currentSelectedWgt = this.getChildAt(this._selectedIndex),
+                selectedClass = this.$s('selectedImg');
             // remove highlight of previous selected image
-            var prevSelectedWgt = this.getChildAt(this._selectedIndex),
-            	selectedClass = this.$s('selectedImg');
             if (prevSelectedWgt) {
-//            	debugger;
-//                this._chdex(prevSelectedWgt).className = this.$s('img');
                 jq(this._chdex(prevSelectedWgt)).removeClass(selectedClass);
             }
             // highlight selected image
-            var currentSelectedWgt = this.getChildAt(index);
             if (currentSelectedWgt) {
-//                this._chdex(currentSelectedWgt).className += ' ' + this.$s('selectedImg');
                 jq(this._chdex(currentSelectedWgt)).addClass(selectedClass);
             }
         }
