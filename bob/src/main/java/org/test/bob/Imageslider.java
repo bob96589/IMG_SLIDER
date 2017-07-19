@@ -22,21 +22,19 @@ public class Imageslider extends XulElement {
 	private int _imageWidth = 200;
 	
 	public Image getSelectedItem() {
-		Image image = null;
-		List<Image> children = getItems();
+		List<Image> children = this.<Image>getChildren();
 		if (!isIndexOutOfBound(children, _selectedIndex)) {
-			image = children.get(_selectedIndex);
+			return children.get(_selectedIndex);
 		}
-		return image;
+		return null;
 	}
 
 	public void setSelectedItem(Image img) {
-		int index = getChildIndex(img);
-		if (index != -1) {
-			setSelectedIndex(index);
-		} else {
-			throw new UiException("Item does not exist");
+		if (img.getParent() != this) {
+			// unsupport parent
 		}
+		int index = getChildIndex(img);
+		setSelectedIndex(index);
 	}
 
 	public int getSelectedIndex() {
@@ -46,7 +44,7 @@ public class Imageslider extends XulElement {
 	public void setSelectedIndex(int index) {
 		List<Image> children = this.<Image>getChildren();
 		if (!children.isEmpty() && isIndexOutOfBound(children, index)) {
-			index = -1;
+			throw new UiException("index out of bound"); 
 		}
 		if (_selectedIndex != index) {
 			_selectedIndex = index;
@@ -94,8 +92,12 @@ public class Imageslider extends XulElement {
 		if (cmd.equals(Events.ON_SELECT)) {
 			SelectEvent<Image, Object> event = SelectEvent.getSelectEvent(request);
 			int index = getChildIndex(event.getReference());
-			setSelectedIndex(index);
-			Events.postEvent(event);
+			this._selectedIndex = index;
+//			this.disableClientUpdate(true);
+//			setSelectedIndex(index);
+//			this.disableClientUpdate(false);
+			// this.addEventListener(evtnm, listener), composer
+			Events.postEvent(event); // onSelect zul
 		} else
 			super.service(request, everError);
 	}
@@ -128,17 +130,14 @@ public class Imageslider extends XulElement {
 		}
 		super.beforeChildRemoved(child);
 	}
-
+	
+	// do not need this method
 	private boolean isIndexOutOfBound(List<Image> children, int index) {
 		return index < 0 || index >= children.size();
 	}
 
+	// do not need this method
 	private int getChildIndex(Component child) {
 		return getChildren().indexOf(child);
 	}
-
-	public List<Image> getItems() {
-		return this.<Image>getChildren();
-	}
-
 }

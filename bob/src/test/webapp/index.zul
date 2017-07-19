@@ -11,7 +11,6 @@
 		<textbox id="input" value="100" width="150px" />
 		
 		<separator />
-		<button label="setSelectedItemNull" width="125px" onClick='imgslider.setSelectedItem(null)'/>
 			<button label="setSelectedItem" width="125px" onClick='imgslider.setSelectedItem(imgslider.getChildren().get(Integer.parseInt(input.getValue())))'/>
 			<button label="setSelectedIndex" width="125px" onClick='imgslider.setSelectedIndex(Integer.parseInt(input.getValue()))'/>
 			<button label="setViewportSize" width="125px" onClick='imgslider.setViewportSize(Integer.parseInt(input.getValue()))'/>

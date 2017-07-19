@@ -26,7 +26,7 @@
         setSelectedIndex: function(index, opts) {
         	console.log('setSelectedIndex');
             var prevIndex = this._selectedIndex;
-            if (index != prevIndex  || (opts && opts.force)) {
+            if (index != prevIndex || (opts && opts.force)) {
             	this._selectedIndex = index;
                 if (this.desktop) {
                     this._highlightSelectedItem(prevIndex);
@@ -39,46 +39,50 @@
         bind_: function() {
             this.$supers(bob.Imageslider, 'bind_', arguments);
             zWatch.listen({
-            	onResponse: this
+            	onCommandReady: this
             });
             this.domListen_(this.$n("imgList"), "onClick", "_doImgListClick");
             this.domListen_(this.$n("prevBtn"), "onClick", "_doPrevBtnClick");
             this.domListen_(this.$n("nextBtn"), "onClick", "_doNextBtnClick");
-            if (this.desktop) {
-            	console.log('bind_');
-                this._updateBtnVisibility();
-                this._updateWrapperWidth();
-                this._updateImgListWidth();
-                this._highlightSelectedItem();
-                this._updateChildrenWidth();
-            }
+            
+            console.log('bind_');
+            this._updateBtnVisibility();
+            this._updateWrapperWidth();
+            this._updateImgListWidth();
+            this._highlightSelectedItem();
+            this._updateChildrenWidth();
+
         },
         unbind_: function() {
-            zWatch.unlisten({
-                onResponse: this
-            });
-            this.domUnlisten_(this.$n("imgList"), "onClick", "_doImgListClick");
-            this.domUnlisten_(this.$n("prevBtn"), "onClick", "_doPrevBtnClick");
             this.domUnlisten_(this.$n("nextBtn"), "onClick", "_doNextBtnClick");
+            this.domUnlisten_(this.$n("prevBtn"), "onClick", "_doPrevBtnClick");
+            this.domUnlisten_(this.$n("imgList"), "onClick", "_doImgListClick"); //TODO " > '
+            zWatch.unlisten({
+            	onCommandReady: this
+            });
             this.$supers(bob.Imageslider, 'unbind_', arguments);
         },
-        onResponse: function() {
-            if (this.desktop) {
-            	if(this._isChildAdded){
-            		console.log('onResponse_isChildAdded');
-            		this._updateBtnVisibility();
-            		this._isChildAdded = false;
-            	}else if(this._isChildRemoved){
-            		console.log('onResponse_isChildRemoved');
-            		this._updateBtnVisibility();
-            		this._updateImgListWidth();
-            		this._isChildRemoved = false;
-            	}
-            }
+        onCommandReady: function() {
+        	
+        	if (this._isChildAdded) {// single flag
+        		console.log('onResponse_isChildAdded');
+        		this._updateBtnVisibility();
+        		this._updateImgListWidth();
+        		this._isChildAdded = false;
+        	} else if (this._isChildRemoved){
+        		console.log('onResponse_isChildRemoved');
+        		this._updateBtnVisibility();
+        		this._updateImgListWidth();
+        		this._isChildRemoved = false;
+        	}
+//            if (this.desktop) {
+//            }
         },
         _doImgListClick: function (evt) {
-        	var target = evt.target;
-        	if (this._chdex(target) && 　this._chdex(target).className == this.$s('img')) {
+        	var target = evt.target,
+        		chtarget = this._chdex(target); //TODO
+        	if (chtarget && 　chtarget.className == this.$s('img')) {
+        		//this._selectedIndex = target(wgt).childIndex
               this.fire('onSelect', {
                   items: [target],
                   reference: target
@@ -92,7 +96,7 @@
     		this._doAnimation(1);
     	},
         encloseChildHTML_: function(w, out) {
-            var oo = new zk.Buffer();;
+            var oo = new zk.Buffer(); // new zk.Buffer() better than [] 
             oo.push('<div id="' + w.uuid + '-chdex"  class="', this.$s('img'), '">');
             w.redraw(oo);
             oo.push('</div>');
@@ -109,7 +113,6 @@
             }
             child.bind(desktop);
             this._chdex(child).style.width = jq.px0(this._imageWidth);
-            this._updateImgListWidth();
             this._isChildAdded = true;
         },
         removeChildHTML_: function(child) {
