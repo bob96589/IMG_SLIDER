@@ -1,6 +1,5 @@
 function(out) {
-    var zcls = this.getZclass(),
-        uuid = this.uuid,
+    var uuid = this.uuid,
         sectionClass = this.$s('section');
 
     out.push('<div ', this.domAttrs_(), '>');

@@ -23,14 +23,14 @@
         getSelectedIndex: function() {
             return this._selectedIndex;
         },
-        setSelectedIndex: function(index) {
+        setSelectedIndex: function(index, opts) {
         	console.log('setSelectedIndex');
             var prevIndex = this._selectedIndex;
-            if (index != prevIndex) {
-                this._selectedIndex = index;
+            if (index != prevIndex  || (opts && opts.force)) {
+            	this._selectedIndex = index;
                 if (this.desktop) {
                     this._highlightSelectedItem(prevIndex);
-                    if (index >= 0) {
+                    if (index >= 0 && index < this.nChildren) {
                         this._updateScrollLeftOfWrapper();
                     }
                 }
@@ -39,7 +39,7 @@
         bind_: function() {
             this.$supers(bob.Imageslider, 'bind_', arguments);
             zWatch.listen({
-                onResponse: this
+            	onResponse: this
             });
             if (this.desktop) {
             	console.log('bind_');
@@ -57,15 +57,21 @@
             this.$supers(bob.Imageslider, 'unbind_', arguments);
         },
         onResponse: function() {
-            if (this.desktop && this._isChildModified) {
-                console.log('onResponse');
-                this._updateImgListWidth();
-                this._updateChildrenWidth();
-                this._updateBtnVisibility();
-                this._isChildModified = false;
+            if (this.desktop) {
+            	if(this._isChildAdded){
+            		console.log('onResponse_isChildAdded');
+            		this._updateBtnVisibility();
+            		this._isChildAdded = false;
+            	}else if(this._isChildRemoved){
+            		console.log('onResponse_isChildRemoved');
+            		this._updateBtnVisibility();
+            		this._updateImgListWidth();
+            		this._isChildRemoved = false;
+            	}
             }
         },
         doClick_: function(evt) {
+        	console.log("doClick_");
             var target = evt.target;
             if (evt.domTarget == this.$n('prevBtn')) {
                 this._doAnimation(-1);
@@ -88,9 +94,6 @@
             if (!out) return oo.join('');
             out.push(oo.join(''));
         },
-        _chdex: function(child) {
-            return child.$n('chdex');
-        },
         insertChildHTML_: function(child, before, desktop) {
         	var childHtml = this.encloseChildHTML_(child);
             if (before)
@@ -100,14 +103,18 @@
                 jqn.append(childHtml);
             }
             child.bind(desktop);
-          //this._chdex(child).style.width = jq.px0(this._imageWidth);
-            this._isChildModified = true;
+            this._chdex(child).style.width = jq.px0(this._imageWidth);
+            this._updateImgListWidth();
+            this._isChildAdded = true;
         },
         removeChildHTML_: function(child) {
             var id = child.uuid;
             this.$supers('removeChildHTML_', arguments);
             jq('#' + id + '-chdex').remove();
-            this._isChildModified = true;
+            this._isChildRemoved = true;
+        },
+        _chdex: function(child) {
+            return child.$n('chdex');
         },
         _doAnimation: function(flag) {
         	console.log('_doAnimation');

@@ -1,7 +1,6 @@
 package org.test.bob;
 
 import java.util.List;
-import java.util.Map;
 
 import org.zkoss.zk.au.AuRequest;
 import org.zkoss.zk.ui.Component;
@@ -21,10 +20,10 @@ public class Imageslider extends XulElement {
 	private int _selectedIndex = -1;
 	private int _viewportSize = 3;
 	private int _imageWidth = 200;
-
+	
 	public Image getSelectedItem() {
 		Image image = null;
-		List<Image> children = this.<Image>getChildren();
+		List<Image> children = getItems();
 		if (!isIndexOutOfBound(children, _selectedIndex)) {
 			image = children.get(_selectedIndex);
 		}
@@ -32,13 +31,11 @@ public class Imageslider extends XulElement {
 	}
 
 	public void setSelectedItem(Image img) {
-		if (img == null) {
-			return;
-		}
-		List<Image> children = this.<Image>getChildren();
-		int index = children.indexOf(img);
+		int index = getChildIndex(img);
 		if (index != -1) {
 			setSelectedIndex(index);
+		} else {
+			throw new UiException("Item does not exist");
 		}
 	}
 
@@ -48,15 +45,15 @@ public class Imageslider extends XulElement {
 
 	public void setSelectedIndex(int index) {
 		List<Image> children = this.<Image>getChildren();
-		if(isIndexOutOfBound(children, index)) {
-			//throw new IndexOutOfBoundsException("size: " + children.size() + ", input index: " + index);
+		if (!children.isEmpty() && isIndexOutOfBound(children, index)) {
+			index = -1;
 		}
 		if (_selectedIndex != index) {
 			_selectedIndex = index;
 			smartUpdate("selectedIndex", _selectedIndex);
 		}
 	}
-
+	
 	public int getViewportSize() {
 		return _viewportSize;
 	}
@@ -79,10 +76,6 @@ public class Imageslider extends XulElement {
 		}
 	}
 
-	private boolean isIndexOutOfBound(List<Image> children, int index) {
-		return index < 0 || index >= children.size();
-	}
-
 	protected void renderProperties(org.zkoss.zk.ui.sys.ContentRenderer renderer) throws java.io.IOException {
 		super.renderProperties(renderer);
 		if (_selectedIndex != -1) {
@@ -96,13 +89,11 @@ public class Imageslider extends XulElement {
 		}
 	}
 
-	@SuppressWarnings("rawtypes")
 	public void service(AuRequest request, boolean everError) {
 		final String cmd = request.getCommand();
 		if (cmd.equals(Events.ON_SELECT)) {
 			SelectEvent<Image, Object> event = SelectEvent.getSelectEvent(request);
-			List<Image> children = this.<Image>getChildren();
-			int index = children.indexOf(event.getReference());
+			int index = getChildIndex(event.getReference());
 			setSelectedIndex(index);
 			Events.postEvent(event);
 		} else
@@ -117,27 +108,37 @@ public class Imageslider extends XulElement {
 		if (!(child instanceof Image)) {
 			throw new UiException("Unsupported child for imageslider: " + child);
 		}
-
+		// update selected index
 		if (refChild != null) {
-			List<Image> children = this.<Image>getChildren();
-			int index = children.indexOf(refChild);
+			int index = getChildIndex(refChild);
 			if (_selectedIndex >= index) {
 				setSelectedIndex(_selectedIndex + 1);
 			}
 		}
-
 		super.beforeChildAdded(child, refChild);
 	}
 
 	public void beforeChildRemoved(Component child) {
-		List<Image> children = this.<Image>getChildren();
-		int index = children.indexOf(child);
+		// update selected index
+		int index = getChildIndex(child);
 		if (_selectedIndex > index) {
 			setSelectedIndex(_selectedIndex - 1);
 		} else if (_selectedIndex == index) {
 			setSelectedIndex(-1);
 		}
 		super.beforeChildRemoved(child);
+	}
+
+	private boolean isIndexOutOfBound(List<Image> children, int index) {
+		return index < 0 || index >= children.size();
+	}
+
+	private int getChildIndex(Component child) {
+		return getChildren().indexOf(child);
+	}
+
+	public List<Image> getItems() {
+		return this.<Image>getChildren();
 	}
 
 }
