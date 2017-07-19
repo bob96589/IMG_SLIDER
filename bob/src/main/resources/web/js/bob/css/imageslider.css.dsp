@@ -41,6 +41,7 @@
 
 .z-imageslider-img{
 	float: left;
+	border: white 5px solid;
 }
 
 .z-imageslider-img img{

@@ -30,8 +30,8 @@ public class Imageslider extends XulElement {
 	}
 
 	public void setSelectedItem(Image img) {
-		if (img.getParent() != this) {
-			// unsupport parent
+		if (this != img.getParent()) {
+			throw new UiException("Unsupport parent"); 
 		}
 		int index = getChildIndex(img);
 		setSelectedIndex(index);
@@ -93,11 +93,7 @@ public class Imageslider extends XulElement {
 			SelectEvent<Image, Object> event = SelectEvent.getSelectEvent(request);
 			int index = getChildIndex(event.getReference());
 			this._selectedIndex = index;
-//			this.disableClientUpdate(true);
-//			setSelectedIndex(index);
-//			this.disableClientUpdate(false);
-			// this.addEventListener(evtnm, listener), composer
-			Events.postEvent(event); // onSelect zul
+			Events.postEvent(event);
 		} else
 			super.service(request, everError);
 	}
