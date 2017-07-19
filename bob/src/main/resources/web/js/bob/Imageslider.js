@@ -41,6 +41,9 @@
             zWatch.listen({
             	onResponse: this
             });
+            this.domListen_(this.$n("imgList"), "onClick", "_doImgListClick");
+            this.domListen_(this.$n("prevBtn"), "onClick", "_doPrevBtnClick");
+            this.domListen_(this.$n("nextBtn"), "onClick", "_doNextBtnClick");
             if (this.desktop) {
             	console.log('bind_');
                 this._updateBtnVisibility();
@@ -54,6 +57,9 @@
             zWatch.unlisten({
                 onResponse: this
             });
+            this.domUnlisten_(this.$n("imgList"), "onClick", "_doImgListClick");
+            this.domUnlisten_(this.$n("prevBtn"), "onClick", "_doPrevBtnClick");
+            this.domUnlisten_(this.$n("nextBtn"), "onClick", "_doNextBtnClick");
             this.$supers(bob.Imageslider, 'unbind_', arguments);
         },
         onResponse: function() {
@@ -70,22 +76,21 @@
             	}
             }
         },
-        doClick_: function(evt) {
-        	console.log("doClick_");
-            var target = evt.target;
-            if (evt.domTarget == this.$n('prevBtn')) {
-                this._doAnimation(-1);
-            } else if (evt.domTarget == this.$n('nextBtn')) {
-                this._doAnimation(1);
-            } else if (this._chdex(target) && 　this._chdex(target).className == this.$s('img')) {
-                this.fire('onSelect', {
-                    items: [target],
-                    reference: target
-                });
-            } else {
-                this.$super('doClick_', evt, true);
-            }
-        },
+        _doImgListClick: function (evt) {
+        	var target = evt.target;
+        	if (this._chdex(target) && 　this._chdex(target).className == this.$s('img')) {
+              this.fire('onSelect', {
+                  items: [target],
+                  reference: target
+              });
+          }
+    	},
+    	_doPrevBtnClick: function (evt) {
+    		this._doAnimation(-1);
+    	},
+    	_doNextBtnClick: function (evt) {
+    		this._doAnimation(1);
+    	},
         encloseChildHTML_: function(w, out) {
             var oo = new zk.Buffer();;
             oo.push('<div id="' + w.uuid + '-chdex"  class="', this.$s('img'), '">');
