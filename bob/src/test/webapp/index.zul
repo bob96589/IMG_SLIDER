@@ -1,6 +1,6 @@
 <zk>
 	<window id="window" title="Hello World!!" border="normal" width="1500px">
-		<imageslider id="imgslider" onSelect="alert(self.getSelectedItem())" viewportSize="3" selectedIndex="1" imageWidth="250">
+		<imageslider id="imgslider" onSelect="alert(self.getSelectedItem())" viewportSize="3" imageWidth="250">
 			<image src="images/ironman-01.jpg"/>
 			<image src="images/ironman-02.jpg"/>
 			<image src="images/ironman-03.jpg"/>
@@ -11,11 +11,14 @@
 		<textbox id="input" value="100" width="150px" />
 		
 		<separator />
+			<button label="setSelectedItem(null)" width="125px" onClick='imgslider.setSelectedItem(null)'/>
+		<separator />
 			<button label="setSelectedItem" width="125px" onClick='imgslider.setSelectedItem(imgslider.getChildren().get(Integer.parseInt(input.getValue())))'/>
 			<button label="setSelectedIndex" width="125px" onClick='imgslider.setSelectedIndex(Integer.parseInt(input.getValue()))'/>
 			<button label="setViewportSize" width="125px" onClick='imgslider.setViewportSize(Integer.parseInt(input.getValue()))'/>
 			<button label="setImageWidth" width="125px" onClick='imgslider.setImageWidth(Integer.parseInt(input.getValue()))'/>
 		<separator />
+			<button label="getSelectedItem" width="125px" onClick='alert(imgslider.getSelectedItem())'/>
 			<button label="getSelectedIndex" width="125px" onClick='window.setTitle(Integer.toString(imgslider.getSelectedIndex()))'/>
 			<button label="getViewportSize" width="125px" onClick='window.setTitle(Integer.toString(imgslider.getViewportSize()))'/>
 			<button label="getImageWidth" width="125px" onClick='window.setTitle(Integer.toString(imgslider.getImageWidth()))'/>

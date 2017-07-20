@@ -5,14 +5,12 @@
         $define: {
             viewportSize: function() {
                 if (this.desktop) {
-                    console.log('viewportSize');
                     this._updateWrapperWidth();
                     this._updateBtnVisibility();
                 }
             },
             imageWidth: function() {
                 if (this.desktop) {
-                    console.log('imageWidth');
                     this._updateWrapperWidth();
                     this._updateImgListWidth();
                     this._updateScrollLeftOfWrapper();
@@ -20,19 +18,16 @@
                 }
             }
         },
-        getSelectedIndex: function() {
-            return this._selectedIndex;
+        getSelectedItem: function() {
+            return this._selectedItem;
         },
-        setSelectedIndex: function(index, opts) {
-            console.log('setSelectedIndex');
-            var prevIndex = this._selectedIndex;
-            if (index != prevIndex || (opts && opts.force)) {
-                this._selectedIndex = index;
+        setSelectedItem: function(item, opts) {
+            var prevItem = this._selectedItem;
+            if (item != prevItem || (opts && opts.force)) {
+                this._selectedItem = item;
                 if (this.desktop) {
-                    this._highlightSelectedItem(prevIndex);
-                    if (index >= 0 && index < this.nChildren) {
-                        this._updateScrollLeftOfWrapper();
-                    }
+                    this._highlightSelectedItem(prevItem);
+                    this._updateScrollLeftOfWrapper();
                 }
             }
         },
@@ -45,11 +40,9 @@
             this.domListen_(this.$n('prevBtn'), 'onClick', '_doPrevBtnClick');
             this.domListen_(this.$n('nextBtn'), 'onClick', '_doNextBtnClick');
 
-            console.log('bind_');
             this._updateBtnVisibility();
             this._updateWrapperWidth();
             this._updateImgListWidth();
-            this._highlightSelectedItem();
             this._updateChildrenWidth();
 
         },
@@ -73,9 +66,9 @@
             var target = evt.target,
                 chdexOfTarget = this._chdex(target);
             if (chdexOfTarget && 　chdexOfTarget.className == this.$s('img')) {
-                var prevIndex = this._selectedIndex;
-                this._selectedIndex = target.getChildIndex();
-                this._highlightSelectedItem(prevIndex);
+                var prevItem = this._selectedItem;
+                this._selectedItem = target;
+                this._highlightSelectedItem(prevItem);
                 this.fire('onSelect', {
                     items: [target],
                     reference: target
@@ -118,7 +111,6 @@
             return child.$n('chdex');
         },
         _doAnimation: function(flag) {
-            console.log('_doAnimation');
             var wgt = this;
             if (wgt._stepMovement) return;
             var steps = 10,
@@ -135,21 +127,17 @@
             }, 10);
         },
         _updateWrapperWidth: function() {
-            console.log('_updateWrapperWidth');
             this.$n('wrapper').style.width = jq.px0(this._imageWidth * this._viewportSize);
         },
         _updateChildrenWidth: function() {
-            console.log('_updateChildrenWidth');
             for (var w = this.firstChild; w; w = w.nextSibling) {
                 this._chdex(w).style.width = jq.px0(this._imageWidth);
             }
         },
         _updateImgListWidth: function() {
-            console.log('_updateImgListWidth');
             this.$n('imgList').style.width = jq.px0(this._imageWidth * this.nChildren);
         },
         _updateBtnVisibility: function() {
-            console.log('_updateBtnVisibility');
             var jqPrevBtn = jq(this.$n('prevBtn')),
                 jqNextBtn = jq(this.$n('nextBtn')),
                 hiddenClass = this.$s('hidden');
@@ -164,8 +152,7 @@
             }
         },
         _updateScrollLeftOfWrapper: function() {
-            console.log('_updateScrollLeftOfWrapper');
-            var index = this._selectedIndex;
+            var index = this._selectedItem.getChildIndex();
             if (index == -1) {
                 return;
             }
@@ -176,10 +163,9 @@
                 this.$n('wrapper').scrollLeft = maxDist;
             }
         },
-        _highlightSelectedItem: function(prevIndex) {
-            console.log('_highlightSelectedItem');
-            var prevSelectedWgt = this.getChildAt(prevIndex),
-                currentSelectedWgt = this.getChildAt(this._selectedIndex),
+        _highlightSelectedItem: function(prevItem) {
+            var prevSelectedWgt = prevItem,
+                currentSelectedWgt = this._selectedItem,
                 selectedClass = this.$s('selectedImg');
             // remove highlight of previous selected image
             if (prevSelectedWgt) {
