@@ -49,7 +49,7 @@ public class Imageslider extends XulElement {
 		if (size == 0) {
 			return;
 		}
-		if(index < 0 || index >= size) {
+		if (index < 0 || index >= size) {
 			throw new UiException("Index: " + index + ", Size: " + size);
 		}
 		setSelectedItem(children.get(index));
